@@ -466,15 +466,13 @@ function redrawPreview() {
 
 function updateOutputText() {
   let out = '';
-  state.palette.forEach((c, i) => {
-    const t = state.transparentSet.has(i) ? ' T' : '';
-    out += `${i.toString(16)}=${c.rgb[0]};${c.rgb[1]};${c.rgb[2]}${t}\n`;
-  });
-  out += '\n';
   const numY = state.pixelIdx.length;
   const numX = state.pixelIdx[0].length;
   for (let y = 0; y < numY; y++) {
-    for (let x = 0; x < numX; x++) out += state.pixelIdx[y][x].toString(16);
+    for (let x = 0; x < numX; x++) {
+      const pi = state.pixelIdx[y][x];
+      out += state.transparentSet.has(pi) ? ' ' : pi.toString(16);
+    }
     out += '\n';
   }
   state.outputText = out;

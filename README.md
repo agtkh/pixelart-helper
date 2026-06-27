@@ -31,13 +31,12 @@ pixelart-helper/
 
 ## Output Format (`pixelart` CLI compatible)
 
-```
-0=R;G;B
-1=R;G;B T   ← T marks a transparent color
-...
+A pixel grid where each character is a hex palette index, and a space represents a transparent pixel.
 
+```
 0123...
-1230...
+ 230...   ← leading space = transparent pixel
+01 2...   ← space in middle = transparent pixel
 ```
 
 ## Keyboard Shortcuts
