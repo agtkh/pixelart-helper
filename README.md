@@ -4,21 +4,11 @@ A browser-based GUI helper for the `pixelart` CLI command. No install required �
 
 Visually generate the color palette and pixel map that `pixelart` expects, then copy the output directly into your workflow.
 
-## Features
-
-- **Drag & drop** image loading (PNG / JPG / WEBP / GIF)
-- **Clipboard paste** (⌘V / Ctrl+V)
-- **Crop selection** — drag on the source image to pick a region
-- **Grid size** — set X / Y pixel counts via slider or direct input
-- **Color settings** — tune merge threshold and max color count
-- **Transparency editing** — click any palette swatch to toggle it transparent
-- **Zoom & pan preview** — mouse wheel, buttons, or drag to navigate
-- **PNG export** — saves with transparency (alpha channel preserved)
-- **Copy color codes** — output in `pixelart` CLI-compatible format
-
 ## Usage
 
 Open `index.html` in any modern browser. No server needed.
+
+[https://agtkh.github.io/pixelart-helper/](https://agtkh.github.io/pixelart-helper/)
 
 ```
 pixelart-helper/
