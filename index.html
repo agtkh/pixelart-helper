@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Arter</title>
+  <meta name="description" content="画像をピクセルアートに変換するツール">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ═══ HEADER ═══ -->
+    <header id="header">
+      <div class="header-left">
+        <div class="logo" aria-hidden="true">
+          <div class="logo-grid">
+            <span class="px on"></span><span class="px off"></span><span class="px on"></span>
+            <span class="px off"></span><span class="px on"></span><span class="px off"></span>
+            <span class="px on"></span><span class="px off"></span><span class="px on"></span>
+          </div>
+        </div>
+        <span class="app-name">Pixel Arter</span>
+        <span class="app-ver">v2.0</span>
+      </div>
+      <div class="header-right">
+        <span class="kbd">⌘ Enter</span><span class="kbd-label">変換</span>
+      </div>
+    </header>
+
+    <!-- ═══ MAIN ═══ -->
+    <main id="main">
+
+      <!-- ── Canvas Area ── -->
+      <section id="canvas-area">
+
+        <!-- Drop Zone -->
+        <div id="drop-zone" role="button" tabindex="0" aria-label="画像をドロップまたはクリックして選択">
+          <div class="drop-inner">
+            <div class="drop-icon" aria-hidden="true">
+              <div class="drop-pixel-art">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+            <p class="drop-title">画像をドロップ</p>
+            <p class="drop-sub">PNG / JPG / WEBP / GIF&emsp;·&emsp;クリップボードから貼り付け可（⌘V）</p>
+            <button class="btn-browse" id="browse-btn" type="button">ファイルを選択</button>
+          </div>
+        </div>
+
+        <!-- Workspace -->
+        <div id="workspace" aria-hidden="true">
+          <div class="panel-row">
+
+            <!-- Source Panel -->
+            <div class="panel" id="source-panel">
+              <div class="panel-header">
+                <span class="panel-label">SOURCE</span>
+                <span class="panel-meta" id="selection-info">
+                  <span id="sel-dim">—</span>
+                </span>
+              </div>
+              <div class="panel-body" id="source-body">
+                <div id="source-container">
+                  <img id="source-img" alt="Source image" draggable="false">
+                  <canvas id="selection-canvas"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="panel" id="preview-panel">
+              <div class="panel-header">
+              <span class="panel-label">PREVIEW</span>
+              <div class="zoom-ctrl" id="zoom-ctrl" style="display:none;">
+                <button class="zoom-btn" id="zoom-out-btn" title="縮小" type="button">−</button>
+                <span class="zoom-val" id="zoom-val">1×</span>
+                <button class="zoom-btn" id="zoom-in-btn" title="拡大" type="button">+</button>
+                <button class="zoom-btn zoom-fit" id="zoom-fit-btn" title="フィット" type="button">FIT</button>
+              </div>
+              <span class="panel-meta" id="preview-meta"></span>
+            </div>
+            <div class="panel-body" id="preview-body">
+              <div class="empty-state" id="preview-empty">
+                <span class="empty-icon" aria-hidden="true">—</span>
+                <span>変換後に表示</span>
+              </div>
+              <div id="preview-canvas-wrap">
+                <canvas id="preview-canvas" style="display:none;"></canvas>
+              </div>
+            </div>
+
+          </div><!-- /panel-row -->
+
+          <!-- Status -->
+          <div id="status-bar" role="status" aria-live="polite">
+            <span id="status-icon" aria-hidden="true">·</span>
+            <span id="status-text">左パネルをドラッグして切り抜き範囲を選択（省略すると画像全体を使用）</span>
+          </div>
+        </div><!-- /workspace -->
+
+      </section><!-- /canvas-area -->
+
+      <!-- ── Sidebar ── -->
+      <aside id="sidebar">
+
+        <!-- Steps -->
+        <div class="sb-section" id="sb-steps">
+          <div class="sb-section-title">WORKFLOW</div>
+          <ol class="steps" id="steps-list">
+            <li class="step active" id="step-1" data-step="1">
+              <span class="step-num">1</span>
+              <span class="step-text">画像を読み込む</span>
+            </li>
+            <li class="step" id="step-2" data-step="2">
+              <span class="step-num">2</span>
+              <span class="step-text">範囲を選択 <em>任意</em></span>
+            </li>
+            <li class="step" id="step-3" data-step="3">
+              <span class="step-num">3</span>
+              <span class="step-text">グリッドサイズを設定</span>
+            </li>
+            <li class="step" id="step-4" data-step="4">
+              <span class="step-num">4</span>
+              <span class="step-text">変換 &amp; プレビュー</span>
+            </li>
+            <li class="step" id="step-5" data-step="5">
+              <span class="step-num">5</span>
+              <span class="step-text">保存 &amp; コピー</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Grid -->
+        <div class="sb-section">
+          <div class="sb-section-title">GRID SIZE</div>
+
+          <div class="control">
+            <div class="control-header">
+              <label class="control-label" for="px-x">横ピクセル数 X</label>
+              <span class="control-val" id="px-x-val">16</span>
+            </div>
+            <input type="range" id="px-x" min="2" max="128" value="16" step="1">
+          </div>
+
+          <div class="control">
+            <div class="control-header">
+              <label class="control-label" for="px-y">縦ピクセル数 Y</label>
+              <span class="control-val" id="px-y-val">16</span>
+            </div>
+            <input type="range" id="px-y" min="2" max="128" value="16" step="1">
+          </div>
+
+          <div class="input-row">
+            <div class="num-field">
+              <label class="num-label" for="px-x-num">X</label>
+              <input type="number" id="px-x-num" class="num-input" min="2" max="128" value="16">
+            </div>
+            <div class="num-field">
+              <label class="num-label" for="px-y-num">Y</label>
+              <input type="number" id="px-y-num" class="num-input" min="2" max="128" value="16">
+            </div>
+          </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="sb-section">
+          <div class="sb-section-title">COLOR</div>
+
+          <div class="control">
+            <div class="control-header">
+              <label class="control-label" for="threshold">色統合しきい値</label>
+              <span class="control-val" id="threshold-val">20</span>
+            </div>
+            <input type="range" id="threshold" min="0" max="100" value="20" step="1">
+            <div class="control-hint"><span>精細</span><span>大まか</span></div>
+          </div>
+
+          <div class="control">
+            <div class="control-header">
+              <label class="control-label" for="max-colors">最大色数</label>
+              <span class="control-val" id="max-colors-val">16</span>
+            </div>
+            <input type="range" id="max-colors" min="2" max="64" value="16" step="1">
+          </div>
+        </div>
+
+        <!-- Action -->
+        <div class="sb-section">
+          <button class="btn btn-convert" id="convert-btn" type="button" disabled>
+            <span class="btn-label">変換する</span>
+            <span class="btn-shortcut">⌘↵</span>
+          </button>
+          <div class="progress-wrap" id="progress-wrap" aria-hidden="true">
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Palette -->
+        <div class="sb-section">
+          <div class="sb-section-title">
+          PALETTE
+          <span class="section-count" id="color-count"></span>
+        </div>
+        <p class="palette-hint">クリックで透明切り替え</p>
+        <div class="palette" id="palette-container">
+            <span class="palette-empty">変換後に表示</span>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="sb-section" id="output-section" style="display:none;">
+          <div class="sb-section-title">EXPORT</div>
+          <div class="btn-stack">
+            <button class="btn btn-save" id="save-img-btn" type="button">
+              画像を保存 <span class="btn-ext">.png</span>
+            </button>
+            <button class="btn btn-copy" id="copy-code-btn" type="button">
+              カラーコードをコピー
+            </button>
+            <button class="btn btn-reset" id="reset-btn" type="button">
+              リセット
+            </button>
+          </div>
+          <div class="output-wrap">
+            <div class="output-label">TEXT OUTPUT</div>
+            <pre id="output-text" aria-label="テキスト出力"></pre>
+          </div>
+        </div>
+
+      </aside><!-- /sidebar -->
+
+    </main><!-- /main -->
+
+  </div><!-- /app -->
+
+  <!-- Toast -->
+  <div id="toast" role="alert" aria-live="assertive">
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- Hidden file input -->
+  <input type="file" id="file-input" accept="image/*" style="display:none;" aria-hidden="true">
+
+  <script src="js/app.js"></script>
+</body>
+</html>
